@@ -1,0 +1,16 @@
+{
+  "name": "diamond-node",
+  "version": "1.0.0",
+  "description": "A Node.js persistence module for DiamondDb",
+  "main": "diamondNode.js",
+  "scripts": {
+    "test": "mocha test/main-test.js"
+  },
+  "author": "James H Edwards",
+  "license": "MIT",
+  "devDependencies": {
+    "diamond-db": "^1.0.0",
+    "mocha": "^3.2.0",
+    "request": "^2.81.0"
+  }
+}
