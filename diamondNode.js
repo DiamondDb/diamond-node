@@ -9,7 +9,6 @@ const {
   PERSIST_ALL, INITIALIZE_PERSISTANCE,
   MAKE_TABLE, UPDATE_META,
   FETCH_RECORD, STORE_RECORD, FILTER_RECORDS,
-  success, failure
 } = core.operations.internal
 const { READ, APPEND, PAGE_SIZE } = constants
 
@@ -26,7 +25,6 @@ module.exports = class Store {
   init(){
     return diskUtils.openOrCreate(this.metaFilePath, READ)
       .then(this._loadMeta.bind(this))
-      .then((tables) => success(tables))
   }
   /* called by init() */
   _loadMeta(data) {
@@ -56,12 +54,10 @@ module.exports = class Store {
   }
   makeTable({ tableData }) {
     if(!tableData){
-      return Promise.reject(failure('Create table message did not contain new table'))
+      return Promise.reject('Create table message did not contain new table')
     }
     const tableString = tableUtils.makeTableString(tableData)
-    return diskUtils.append(this.metaFilePath, tableString).then(() => {
-      return success()
-    })
+    return diskUtils.append(this.metaFilePath, tableString)
   }
   /* called by persist */
   _save(fileName, records) {
@@ -81,9 +77,8 @@ module.exports = class Store {
         const recordString = page.substring(position, position+schemaLength)
         const record = recordUtils.parseRecord(recordString, table.schema)
         record._id = recordIdx
-        return success(record)
+        return record
       })
-      .catch(e => failure(e))
   }
   filter({ table, query: { key, comparator, value } }, resolve, reject){
     const numRecords = table.index-1
@@ -122,12 +117,9 @@ module.exports = class Store {
       return this._save(fileName, recordString)
     })
     if(promises.length){
-      return this.updateMeta()
-      .then(() => Promise.all(promises))
-      .then(() => success())
-      .catch(e => failure(e))
+      return this.updateMeta().then(() => Promise.all(promises))
     } else {
-      return success()
+      return Promise.resolve()
     }
   }
   message(message){
